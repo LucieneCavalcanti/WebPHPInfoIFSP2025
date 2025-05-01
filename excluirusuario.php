@@ -14,7 +14,9 @@
             // Obtém o número de linhas afetadas
             $linhas_deletadas = $stmt->rowCount();
             if($linhas_deletadas==1)
-                echo "<p style='color:blue;'>Usuário excluído com Sucesso!</p>";
+                //echo "<p style='color:blue;'>Usuário excluído com Sucesso!</p>";
+                echo "<script>window.alert('Usuário excluído com Sucesso!')
+                window.location.href='listausuarios.php'</script>";
             else
                 echo "<p style='color:red;'>Erro ao excluir!</p>";
             //echo "você quer excluir o id " . $id ;
