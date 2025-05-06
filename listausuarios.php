@@ -1,4 +1,6 @@
 <?php
+    session_start();
+    if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador"){
     require_once("banco/conexao.php");
 
     try {
@@ -68,4 +70,7 @@
         </table>
     </div>
 
-<?php require_once("includes/rodape.php"); ?>
+<?php require_once("includes/rodape.php"); }
+else {
+    echo "<h2 style='color:red;'>Você não tem permissão para acessar este conteúdo.</h2>";
+} ?>
