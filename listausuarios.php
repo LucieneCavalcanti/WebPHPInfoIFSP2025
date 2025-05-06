@@ -1,3 +1,4 @@
+<?php require_once("includes/topo.php"); ?>
 <?php
     session_start();
     if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador"){
@@ -22,7 +23,7 @@
     }
 ?>
 
-<?php require_once("includes/topo.php"); ?>
+
 
     <div class="container">
         <h2>
@@ -70,7 +71,9 @@
         </table>
     </div>
 
-<?php require_once("includes/rodape.php"); }
+<?php }
 else {
     echo "<h2 style='color:red;'>Você não tem permissão para acessar este conteúdo.</h2>";
-} ?>
+} 
+require_once("includes/rodape.php"); 
+?>

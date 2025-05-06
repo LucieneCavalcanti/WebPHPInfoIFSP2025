@@ -1,6 +1,7 @@
-<?php require_once("includes/topo.php"); ?>
-
-    <?php
+<?php 
+require_once("includes/topo.php");
+session_start();
+if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador"){
     try {
         if(isset($_POST['nome']) && isset($_POST['email'])
          && isset($_POST['senha'])){
@@ -39,5 +40,9 @@
         "</h2>";
     }
     $conn=null;
-    ?>
-<?php require_once("includes/rodape.php"); ?>
+    }
+    else {
+        echo "<h2 style='color:red;'>Você não tem permissão para acessar este conteúdo.</h2>";
+    } 
+require_once("includes/rodape.php"); 
+?>

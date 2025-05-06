@@ -1,6 +1,8 @@
 <?php
+require_once("includes/topo.php");
+session_start();
+if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador"){
     require_once("banco/conexao.php");
-    require_once("includes/topo.php");
     try{
         if(isset($_GET['id'])){//enviou o id ??
             $id = $_GET['id']; //pega o id
@@ -56,8 +58,9 @@
     } catch(PDOException $e) {
         echo "<h2 style='color:red;'>Erro: " . $e->getMessage() . "</h2>";
     }
+}
+else {
+    echo "<h2 style='color:red;'>Você não tem permissão para acessar este conteúdo.</h2>";
+} 
+require_once("includes/rodape.php"); 
 ?>
-
-
-
-<?php require_once("includes/rodape.php"); ?>

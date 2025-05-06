@@ -1,5 +1,7 @@
 <?php
-    require_once("includes/topo.php");
+require_once("includes/topo.php");
+session_start();
+if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador"){
     require_once("banco/conexao.php");
     try{
         if(isset($_GET['id'])){
@@ -29,4 +31,9 @@
         $erro->getMessage() . "</p>";
     }
 
+}
+else {
+    echo "<h2 style='color:red;'>Você não tem permissão para acessar este conteúdo.</h2>";
+} 
+require_once("includes/rodape.php"); 
 ?>
