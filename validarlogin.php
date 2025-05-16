@@ -22,22 +22,9 @@
                     session_start();
                     $_SESSION['idUsuario']= $usuarios[0]['id'];
                     $_SESSION['nomeUsuario']= $usuarios[0]['nome'];
+                    $_SESSION['tipoUsuario'] = $usuarios[0]['tipo'];
                     //usuário ativo
-                    if($usuarios[0]['tipo']=="Comum"){
-                        $_SESSION['tipoUsuario'] = "Comum";
-                        echo "<p style='color:blue;'>Seja bem vindo(a) " . $usuarios[0]['nome'] . "</p>"; //mostrando na tela o nome do usuário
-                        echo "<p>Seu nível de usuário é Comum.</p>";
-                        echo "<p><a href='perfil.php'>Perfil</a></p>";
-                        echo "<p><a href='sair.php'>Sair</a></p>";
-                    }
-                    if($usuarios[0]['tipo']=="Administrador"){
-                        $_SESSION['tipoUsuario']="Administrador";
-                        echo "<p style='color:pink;'>Seja bem vindo(a) " . $usuarios[0]['nome'] . "</p>"; //mostrando na tela o nome do usuário
-                        echo "<p><a href='perfil.php'>Perfil</a></p>";
-                        echo "<p><a href='listausuarios.php'>Usuários</a></p>";
-                        echo "<p><a href='listaprodutos.php'>Produtos</a></p>";
-                        echo "<p><a href='sair.php'>Sair</a></p>";
-                    }
+                    header('location:indexlogado.php');
                 }
             }else {
                 echo "<h2>Usuário ou senha inválidos!</h2>";
