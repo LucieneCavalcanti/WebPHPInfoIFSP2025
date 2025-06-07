@@ -1,44 +1,77 @@
 <?php
-    require_once("banco/conexao.php");
-    require_once("includes/topo.php");
-    try{
-        if(isset($_POST['email']) && isset($_POST['senha'])){
-            $email = $_POST['email']; //pega o email
-            $senha = $_POST['senha'];
-            $select = $conn->prepare("select * from tbusuarios where email=:email
-            and senha=:senha");
-            // Define o parâmetro
-            $select->bindParam(":email", $email, PDO::PARAM_STR);
-            $select->bindParam(":senha", $senha, PDO::PARAM_STR);
-            $select->execute();
+session_start();
+require_once("includes/topo.php");
+require_once("banco/conexao.php");
 
-            $usuarios = $select->fetchAll(PDO::FETCH_ASSOC); //pegar o registro
-            if(count($usuarios)==1) { //encontrou o usuario 
-                //echo $usuarios[0]['id']; //mostrando na tela o id do usuário
-                //logica do login
-                if($usuarios[0]['status']==1)
-                    echo "<p>Seu login está inativo, entre em contato com o administrador.</p>";
-                if($usuarios[0]['status']==2){
-                    session_start();
-                    $_SESSION['idUsuario']= $usuarios[0]['id'];
-                    $_SESSION['nomeUsuario']= $usuarios[0]['nome'];
-                    $_SESSION['tipoUsuario'] = $usuarios[0]['tipo'];
-                    //usuário ativo
-                    header('location:indexlogado.php');
-                }
-            }else {
-                echo "<h2>Usuário ou senha inválidos!</h2>";
-                echo "<p>Faça <a href='login.php'>login</a> novamente.";
+try {
+    if(isset($_POST['email']) && isset($_POST['senha'])) {
+        $email = $_POST['email'];
+        $senha = $_POST['senha'];
+        
+        $select = $conn->prepare("SELECT * FROM tbusuarios WHERE email=:email AND senha=:senha");
+        $select->bindParam(":email", $email, PDO::PARAM_STR);
+        $select->bindParam(":senha", $senha, PDO::PARAM_STR);
+        $select->execute();
+
+        $usuarios = $select->fetchAll(PDO::FETCH_ASSOC);
+        
+        if(count($usuarios) == 1) {
+            if($usuarios[0]['status'] == 1) {
+                ?>
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Atenção!</strong> Seu login está inativo, entre em contato com o administrador.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="login.php" class="btn btn-primary">Voltar para o login</a>
+                </div>
+                <?php
+            } elseif($usuarios[0]['status'] == 2) {
+                $_SESSION['idUsuario'] = $usuarios[0]['id'];
+                $_SESSION['nomeUsuario'] = $usuarios[0]['nome'];
+                $_SESSION['tipoUsuario'] = $usuarios[0]['tipo'];
+                
+                header('location:indexlogado.php');
+                exit;
             }
-        }else{
-            echo "<script>window.alert('Digite seu e-mail e senha!')
-                window.location.href='login.php'</script>";
+        } else {
+            ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Erro!</strong> Usuário ou senha inválidos.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div class="text-center mt-3">
+                <a href="login.php" class="btn btn-primary">Voltar para o login</a>
+            </div>
+            <?php
         }
-    } catch(PDOException $e) {
-        echo "<h2 style='color:red;'>Erro: " . $e->getMessage() . "</h2>";
+    } else {
+        ?>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Atenção!</strong> Digite seu e-mail e senha.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div class="text-center mt-3">
+            <a href="login.php" class="btn btn-primary">Voltar para o login</a>
+        </div>
+        <script>
+            // Redirecionar após 2 segundos
+            setTimeout(function() {
+                window.location.href = 'login.php';
+            }, 2000);
+        </script>
+        <?php
     }
+} catch(PDOException $e) {
+    ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Erro:</strong> <?php echo $e->getMessage(); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="text-center mt-3">
+        <a href="login.php" class="btn btn-primary">Voltar para o login</a>
+    </div>
+    <?php
+}
+require_once("includes/rodape.php");
 ?>
-
-
-
-<?php require_once("includes/rodape.php"); ?>

@@ -7,65 +7,67 @@ if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador")
     try{
         if(isset($_GET['id'])){
             $id = $_GET['id'];
+            $dataHoraTermino = date('Y-m-d H:i:s');
             
-            // Primeiro verifica se o usuário existe
-            $checkStmt = $conn->prepare("SELECT id FROM tbusuarios WHERE id = :id");
+            // Verificar se a tarefa existe e não está concluída
+            $checkStmt = $conn->prepare("SELECT id FROM tarefa WHERE id = :id AND dataHoraTermino IS NULL");
             $checkStmt->bindParam(":id", $id, PDO::PARAM_INT);
             $checkStmt->execute();
             
             if($checkStmt->rowCount() > 0) {
-                // Usuário existe, pode excluir
-                $stmt = $conn->prepare("DELETE FROM tbusuarios WHERE id = :id");
+                // Tarefa existe e não está concluída, pode marcar como concluída
+                $stmt = $conn->prepare("UPDATE tarefa SET dataHoraTermino = :dataHoraTermino WHERE id = :id");
+                $stmt->bindParam(":dataHoraTermino", $dataHoraTermino, PDO::PARAM_STR);
                 $stmt->bindParam(":id", $id, PDO::PARAM_INT);
                 $stmt->execute();
                 
-                $linhas_deletadas = $stmt->rowCount();
-                if($linhas_deletadas == 1) {
+                $linhas_atualizadas = $stmt->rowCount();
+                if($linhas_atualizadas == 1) {
                     ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>Sucesso!</strong> Usuário excluído com sucesso.
+                        <strong>Sucesso!</strong> Tarefa marcada como concluída.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <div class="text-center mt-3">
-                        <a href="listausuarios.php" class="btn btn-primary">Voltar para a listagem</a>
+                        <a href="listatarefas.php" class="btn btn-primary">Voltar para a listagem</a>
                     </div>
                     <script>
                         // Redirecionar após 2 segundos
                         setTimeout(function() {
-                            window.location.href = 'listausuarios.php';
+                            window.location.href = 'listatarefas.php';
                         }, 2000);
                     </script>
                     <?php
                 } else {
                     ?>
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <strong>Atenção!</strong> Erro ao excluir o usuário.
+                        <strong>Atenção!</strong> Erro ao concluir a tarefa.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <div class="text-center mt-3">
-                        <a href="listausuarios.php" class="btn btn-primary">Voltar para a listagem</a>
+                        <a href="listatarefas.php" class="btn btn-primary">Voltar para a listagem</a>
                     </div>
                     <?php
                 }
             } else {
                 ?>
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>Atenção!</strong> Usuário não encontrado.
+                    <strong>Atenção!</strong> Tarefa não encontrada ou já concluída.
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 <div class="text-center mt-3">
-                    <a href="listausuarios.php" class="btn btn-primary">Voltar para a listagem</a>
+                    <a href="listatarefas.php" class="btn btn-primary">Voltar para a listagem</a>
                 </div>
                 <?php
             }
         } else {
             ?>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>Atenção!</strong> Você precisa selecionar um registro.
+                <strong>Atenção!</strong> Você precisa selecionar uma tarefa.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             <div class="text-center mt-3">
-                <a href="listausuarios.php" class="btn btn-primary">Voltar para a listagem</a>
+                <a href="listatarefas.php" class="btn btn-primary">Voltar para a listagem</a>
             </div>
             <?php
         }
@@ -76,7 +78,7 @@ if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador")
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <div class="text-center mt-3">
-            <a href="listausuarios.php" class="btn btn-primary">Voltar para a listagem</a>
+            <a href="listatarefas.php" class="btn btn-primary">Voltar para a listagem</a>
         </div>
         <?php
     }

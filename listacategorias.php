@@ -16,11 +16,11 @@ if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador")
         $condicaoBusca = '';
         
         if (!empty($termoBusca)) {
-            $condicaoBusca = " WHERE nome LIKE :termo OR email LIKE :termo ";
+            $condicaoBusca = " WHERE descricao LIKE :termo ";
         }
         
         // Consulta para contar o total de registros
-        $sqlCount = "SELECT COUNT(*) as total FROM tbusuarios" . $condicaoBusca;
+        $sqlCount = "SELECT COUNT(*) as total FROM categoria" . $condicaoBusca;
         $stmtCount = $conn->prepare($sqlCount);
         
         if (!empty($termoBusca)) {
@@ -33,10 +33,8 @@ if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador")
         $totalPaginas = ceil($totalRegistros / $registrosPorPagina);
         
         // Consulta para buscar os registros da página atual
-        $sql = "SELECT id, nome, email, 
-                DATE_FORMAT(datacadastro, '%d/%m/%Y %H:%i:%s') as datacadastro
-                FROM tbusuarios" . $condicaoBusca . "
-                ORDER BY datacadastro DESC
+        $sql = "SELECT id, descricao FROM categoria" . $condicaoBusca . "
+                ORDER BY id DESC
                 LIMIT :offset, :limit";
         
         $select = $conn->prepare($sql);
@@ -50,8 +48,8 @@ if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador")
         $select->bindParam(':limit', $registrosPorPagina, PDO::PARAM_INT);
         $select->execute();
         
-        $usuarios = $select->fetchAll(PDO::FETCH_ASSOC);
-        $titulo = "Gerenciamento de Usuários";
+        $categorias = $select->fetchAll(PDO::FETCH_ASSOC);
+        $titulo = "Gerenciamento de Categorias";
     } catch(PDOException $e) {
         echo "<div class='alert alert-danger'>Erro: " . $e->getMessage() . "</div>";
     }
@@ -63,42 +61,38 @@ if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador")
         
         <div class="row search-container">
             <div class="col-md-6">
-                <form method="GET" action="listausuarios.php" class="d-flex">
-                    <input type="text" name="busca" class="form-control me-2" placeholder="Buscar por nome ou email" value="<?php echo htmlspecialchars($termoBusca); ?>">
+                <form method="GET" action="listacategorias.php" class="d-flex">
+                    <input type="text" name="busca" class="form-control me-2" placeholder="Buscar por descrição" value="<?php echo htmlspecialchars($termoBusca); ?>">
                     <button type="submit" class="btn btn-primary">Buscar</button>
                 </form>
             </div>
             <div class="col-md-6 text-end">
-                <a href="cadastrousuario.php" class="btn btn-success">
-                    <i class="material-icons align-middle">add</i> Novo Usuário
+                <a href="cadastrocategoria.php" class="btn btn-success">
+                    <i class="material-icons align-middle">add</i> Nova Categoria
                 </a>
             </div>
         </div>
 
-        <?php if (count($usuarios) > 0): ?>
+        <?php if (count($categorias) > 0): ?>
             <div class="table-responsive">
                 <table class="table table-striped table-hover table-bordered">
                     <thead class="table-primary">
                         <tr>
-                            <th width="5%">ID</th>
-                            <th width="30%">Nome</th>
-                            <th width="30%">E-mail</th>
-                            <th width="20%">Data Cadastro</th>
-                            <th width="15%">Ações</th>
+                            <th width="10%">ID</th>
+                            <th width="70%">Descrição</th>
+                            <th width="20%">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($usuarios as $usuario): ?>
+                        <?php foreach ($categorias as $categoria): ?>
                             <tr>
-                                <td><?php echo $usuario['id']; ?></td>
-                                <td><?php echo htmlspecialchars($usuario['nome']); ?></td>
-                                <td><?php echo htmlspecialchars($usuario['email']); ?></td>
-                                <td><?php echo $usuario['datacadastro']; ?></td>
+                                <td><?php echo $categoria['id']; ?></td>
+                                <td><?php echo htmlspecialchars($categoria['descricao']); ?></td>
                                 <td class="action-icons text-center">
-                                    <a href="editarusuario.php?id=<?php echo $usuario['id']; ?>" class="btn btn-sm btn-warning">
+                                    <a href="editarcategoria.php?id=<?php echo $categoria['id']; ?>" class="btn btn-sm btn-warning">
                                         <i class="material-icons">edit</i>
                                     </a>
-                                    <a href="javascript:void(0)" onclick="confirmarExclusao(<?php echo $usuario['id']; ?>)" class="btn btn-sm btn-danger">
+                                    <a href="javascript:void(0)" onclick="confirmarExclusao(<?php echo $categoria['id']; ?>)" class="btn btn-sm btn-danger">
                                         <i class="material-icons">delete</i>
                                     </a>
                                 </td>
@@ -140,7 +134,7 @@ if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador")
             </nav>
         <?php else: ?>
             <div class="alert alert-info">
-                Nenhum usuário encontrado.
+                Nenhuma categoria encontrada.
             </div>
         <?php endif; ?>
     </div>
@@ -148,8 +142,8 @@ if(isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario']=="Administrador")
 
 <script>
 function confirmarExclusao(id) {
-    if (confirm("Tem certeza que deseja excluir este usuário?")) {
-        window.location.href = "excluirusuario.php?id=" + id;
+    if (confirm("Tem certeza que deseja excluir esta categoria? Todas as tarefas associadas também serão excluídas.")) {
+        window.location.href = "excluircategoria.php?id=" + id;
     }
 }
 </script>

@@ -1,8 +1,5 @@
-<footer>
-<div class="rodape">
-    <h3>Contato: afasdfaf af a</h3>
-    <h5>Desenvolvido por Luciene - IFSP 2025</h5>
 </div>
-</footer>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
